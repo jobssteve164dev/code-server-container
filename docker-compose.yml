@@ -1,0 +1,31 @@
+services:
+  code-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/code-server-gemini:latest
+    container_name: code-server
+    user: "0:0"
+    restart: always
+    network_mode: bridge
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+      LANG: ${LANG:-en_US.UTF-8}
+      LANGUAGE: ${LANGUAGE:-en_US:en}
+      LC_ALL: ${LC_ALL:-en_US.UTF-8}
+      SHELL: /bin/bash
+      EDITOR: vim
+      VISUAL: vim
+      PAGER: less
+      TERM: xterm-256color
+    volumes:
+      - /home/ubuntu/ai_test:/home/coder/project
+      - /home/ubuntu/.codex:/root/.codex
+      - /home/ubuntu/.config/code-server:/root/.config/code-server
+      - /home/ubuntu/.local/share/code-server:/root/.local/share/code-server
+      - /home/ubuntu/.gemini:/root/.gemini
+      - /home/ubuntu/.npm:/root/.npm
+      - /home/ubuntu/.cache:/root/.cache
+
