@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     image: local/code-server-gemini:latest
     container_name: code-server
-    user: "0:0"
+    user: "1001:1001"
     restart: always
     network_mode: bridge
     ports:
@@ -21,11 +21,11 @@ services:
       PAGER: less
       TERM: xterm-256color
     volumes:
-      - /home/ubuntu/ai_test:/home/coder/project
-      - /home/ubuntu/.codex:/root/.codex
-      - /home/ubuntu/.config/code-server:/root/.config/code-server
-      - /home/ubuntu/.local/share/code-server:/root/.local/share/code-server
-      - /home/ubuntu/.gemini:/root/.gemini
-      - /home/ubuntu/.npm:/root/.npm
-      - /home/ubuntu/.cache:/root/.cache
+      - /home/ubuntu/ai_test:/home/ubuntu/project
+      - /home/ubuntu/.codex:/home/ubuntu/.codex
+      - /home/ubuntu/.config/code-server:/home/ubuntu/.config/code-server
+      - /home/ubuntu/.local/share/code-server:/home/ubuntu/.local/share/code-server
+      - /home/ubuntu/.gemini:/home/ubuntu/.gemini
+      - /home/ubuntu/.npm:/home/ubuntu/.npm
+      - /home/ubuntu/.cache:/home/ubuntu/.cache
 
