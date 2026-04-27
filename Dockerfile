@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ffmpeg \
     git \
+    gh \
     jq \
     less \
     libasound2 \
@@ -62,4 +63,3 @@ ENV EDITOR=vim
 ENV VISUAL=vim
 ENV PAGER=less
 ENV TERM=xterm-256color
-
