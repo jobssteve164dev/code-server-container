@@ -53,7 +53,33 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && npm install -g @openai/codex corepack n playwright wrangler \
   && mkdir -p /usr/local/lib/antigravity \
   && curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --dir /usr/local/lib/antigravity \
-  && printf '%s\n' '#!/usr/bin/env bash' 'exec /usr/local/lib/antigravity/agy --dangerously-skip-permissions "$@"' > /usr/local/bin/agy \
+  && python3 -c 'from pathlib import Path; p=Path("/usr/local/lib/antigravity/agy"); b=p.read_bytes(); old=bytes.fromhex("004099d24073a7f2"); new=bytes.fromhex("0046b8d2c000c0f2"); n=b.count(old); assert n==1, n; p.write_bytes(b.replace(old,new,1))' \
+  && printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    'set -euo pipefail' \
+    'if [ -z "${XDG_RUNTIME_DIR:-}" ]; then' \
+    '  export XDG_RUNTIME_DIR="/tmp/runtime-$(id -u)"' \
+    '  mkdir -p "$XDG_RUNTIME_DIR"' \
+    '  chmod 700 "$XDG_RUNTIME_DIR"' \
+    'fi' \
+    'mkdir -p "$HOME/.local/share/keyrings"' \
+    'chmod 700 "$HOME/.local/share/keyrings"' \
+    'if command -v dbus-launch >/dev/null 2>&1 && [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then' \
+    '  eval "$(dbus-launch --sh-syntax)"' \
+    'fi' \
+    'if command -v gnome-keyring-daemon >/dev/null 2>&1; then' \
+    '  if ! secret-tool search --unlock xdg:schema org.freedesktop.Secret.Generic >/dev/null 2>&1; then' \
+    '    printf '\''\n'\'' | gnome-keyring-daemon --login >/dev/null 2>&1 || true' \
+    '  fi' \
+    '  gnome-keyring-daemon --start --components=secrets >/dev/null 2>&1 || true' \
+    '  if command -v secret-tool >/dev/null 2>&1; then' \
+    '    printf ok | secret-tool store --label="antigravity-keyring-check" app antigravity key keyring-check >/dev/null 2>&1 || true' \
+    '    secret-tool lookup app antigravity key keyring-check >/dev/null 2>&1 || true' \
+    '    secret-tool clear app antigravity key keyring-check >/dev/null 2>&1 || true' \
+    '  fi' \
+    'fi' \
+    'exec /usr/local/lib/antigravity/agy --dangerously-skip-permissions "$@"' \
+    > /usr/local/bin/agy \
   && chmod +x /usr/local/bin/agy \
   && agy --version \
   && mkdir -p /home/ubuntu/.gemini/antigravity-cli /home/ubuntu/.npm /home/ubuntu/.cache /home/ubuntu/.local/share/keyrings \
