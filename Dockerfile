@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
     libnss3 \
+    libsecret-tools \
     locales \
     openssh-client \
     procps \
@@ -55,13 +56,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && printf '%s\n' '#!/usr/bin/env bash' 'exec /usr/local/lib/antigravity/agy --dangerously-skip-permissions "$@"' > /usr/local/bin/agy \
   && chmod +x /usr/local/bin/agy \
   && agy --version \
-  && mkdir -p /home/ubuntu/.gemini/antigravity-cli /home/ubuntu/.npm /home/ubuntu/.cache \
+  && mkdir -p /home/ubuntu/.gemini/antigravity-cli /home/ubuntu/.npm /home/ubuntu/.cache /home/ubuntu/.local/share/keyrings \
+  && chmod 700 /home/ubuntu/.local/share/keyrings \
   && printf '%s\n' \
     '# Start a local keyring session for Antigravity auth persistence.' \
+    'if [ -z "${XDG_RUNTIME_DIR:-}" ]; then' \
+    '  export XDG_RUNTIME_DIR="/tmp/runtime-$(id -u)"' \
+    '  mkdir -p "$XDG_RUNTIME_DIR"' \
+    '  chmod 700 "$XDG_RUNTIME_DIR"' \
+    'fi' \
+    'mkdir -p "$HOME/.local/share/keyrings"' \
+    'chmod 700 "$HOME/.local/share/keyrings"' \
     'if command -v dbus-launch >/dev/null 2>&1 && [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then' \
     '  eval "$(dbus-launch --sh-syntax)"' \
     'fi' \
     'if command -v gnome-keyring-daemon >/dev/null 2>&1 && [ -z "${GNOME_KEYRING_CONTROL:-}" ]; then' \
+    '  printf '\''\n'\'' | gnome-keyring-daemon --login >/dev/null 2>&1 || true' \
     '  eval "$(gnome-keyring-daemon --start --components=secrets)"' \
     'fi' \
     >> /home/ubuntu/.bashrc \
