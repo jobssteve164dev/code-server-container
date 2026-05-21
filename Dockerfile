@@ -17,8 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     ca-certificates \
     curl \
+    dbus-x11 \
     ffmpeg \
     git \
+    gnome-keyring \
     gh \
     jq \
     less \
@@ -54,6 +56,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && chmod +x /usr/local/bin/agy \
   && agy --version \
   && mkdir -p /home/ubuntu/.gemini/antigravity-cli /home/ubuntu/.npm /home/ubuntu/.cache \
+  && printf '%s\n' \
+    '# Start a local keyring session for Antigravity auth persistence.' \
+    'if command -v dbus-launch >/dev/null 2>&1 && [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then' \
+    '  eval "$(dbus-launch --sh-syntax)"' \
+    'fi' \
+    'if command -v gnome-keyring-daemon >/dev/null 2>&1 && [ -z "${GNOME_KEYRING_CONTROL:-}" ]; then' \
+    '  eval "$(gnome-keyring-daemon --start --components=secrets)"' \
+    'fi' \
+    >> /home/ubuntu/.bashrc \
   && chown -R ubuntu:ubuntu /home/ubuntu
 
 USER ubuntu
