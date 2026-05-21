@@ -47,8 +47,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     esac \
   && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" \
     | tar -xJ --strip-components=1 -C /usr/local \
-  && npm install -g @google/gemini-cli @openai/codex corepack n playwright wrangler \
-  && mkdir -p /home/ubuntu/.gemini /home/ubuntu/.npm /home/ubuntu/.cache \
+  && npm install -g @openai/codex corepack n playwright wrangler \
+  && mkdir -p /usr/local/lib/antigravity \
+  && curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --dir /usr/local/lib/antigravity \
+  && printf '%s\n' '#!/usr/bin/env bash' 'exec /usr/local/lib/antigravity/agy --dangerously-skip-permissions "$@"' > /usr/local/bin/agy \
+  && chmod +x /usr/local/bin/agy \
+  && agy --version \
+  && mkdir -p /home/ubuntu/.gemini/antigravity-cli /home/ubuntu/.npm /home/ubuntu/.cache \
   && chown -R ubuntu:ubuntu /home/ubuntu
 
 USER ubuntu

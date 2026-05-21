@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: local/code-server-gemini:latest
+    image: local/code-server-antigravity:latest
     container_name: code-server
     user: "1001:1001"
     restart: always
